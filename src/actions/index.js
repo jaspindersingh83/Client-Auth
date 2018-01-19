@@ -25,7 +25,7 @@ export const register = (username, password, confirmPassword, history) => {
       return;
     }
     axios
-      .post(`${ROOT_URL}/users`, { username, password })
+      .post(`${ROOT_URL}/api/users`, { username, password })
       .then(() => {
         dispatch({
           type: USER_REGISTERED
@@ -41,10 +41,11 @@ export const register = (username, password, confirmPassword, history) => {
 export const login = (username, password, history) => {
   return dispatch => {
     axios
-      .post(`${ROOT_URL}/login`, { username, password })
-      .then(() => {
+      .post(`${ROOT_URL}/api/login`, { username, password })
+      .then((result) => {
         dispatch({
-          type: USER_AUTHENTICATED
+          type: USER_AUTHENTICATED,
+          payload: result.data.token
         });
         history.push('/users');
       })
@@ -55,6 +56,7 @@ export const login = (username, password, history) => {
 };
 
 export const logout = () => {
+  localStorage.removeItem('token')
   return dispatch => {
     axios
       .post(`${ROOT_URL}/logout`)
@@ -70,9 +72,16 @@ export const logout = () => {
 };
 
 export const getUsers = () => {
+  let token = window.localStorage.getItem('token');
   return dispatch => {
     axios
-      .get(`${ROOT_URL}/users`)
+      .get(`${ROOT_URL}/api/users`,
+      { 
+        headers: {
+          Authorization: token
+        }
+      }
+    )
       .then(response => {
         dispatch({
           type: GET_USERS,

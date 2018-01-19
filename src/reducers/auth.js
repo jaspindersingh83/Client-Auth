@@ -8,13 +8,16 @@ import {
 export default (auth = {}, action) => {
   switch (action.type) {
     case USER_AUTHENTICATED:
-      return { ...auth, authenticated: true };
+    window.localStorage.setItem('token',action.payload);
+    return { ...auth, authenticated: true };
     case USER_UNAUTHENTICATED:
+    window.localStorage.removeItem('token');
       return { ...auth, authenticated: false };
     case AUTHENTICATION_ERROR:
       return { ...auth, error: action.payload };
     case CHECK_IF_AUTHENTICATED:
-      return { ...auth };
+    window.localStorage.getItem('token');
+    return { ...auth };
     default:
       return auth;
   }
